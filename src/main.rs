@@ -12,46 +12,35 @@ fn main() {
 
     //For "[", "]"
     let mut my_stack: Vec<usize> = Vec::new();
-    let mut index = 0;
     let mut map: HashMap<usize, usize> = HashMap::new();
     let mut i = 0;
-    let mut count = 0;
+
 
     // //Turn program into a vec
     let program: Vec<char> = input.chars().filter(|c| "+-><,.[]".contains(*c)).collect();
 
     //Inital Scan
-    for command in input.chars() {
-        match command {
-            '[' => {
-                my_stack.push(index);
-                count += 1;
-            }
-            ']' => {
-                if let Some(start) = my_stack.pop() {
-                    map.insert(start, index);
-                    map.insert(index, start);
-                    count -= 1;
-                } else {
-                    println!("Doesn't have [, so it incomplete");
-                    return;
-                }
-            }
-            _ => {}
-        }
-        index += 1
-    }
-
-    if map.is_empty() || count != 0 {
-        println!("[ is incomplete");
-        return;
-    }
+    inital_scan(input, &mut map, &mut my_stack);
     
     println!("{:?}", map);
+
+    //Debug Option
+    println!("Do you want Debug Mode(Y for yes)");
+    let mut debug = String::new();
+    stdin().read_line(&mut debug).expect("Failed to read");
+    let debug = debug.trim();
 
     //Scan
     while i < program.len() {
         let command = program[i];
+        if debug == "Y" {
+            println!("IP: {} CMD: {} PTR: {} MEM: {:?}",
+                i,
+                command,
+                ptr,
+                brainfuck,
+            );
+        }
 
         match command {
             '[' => {
@@ -93,4 +82,41 @@ fn main() {
         i += 1;
     }
     println!("{:?}", brainfuck);
+}
+
+fn inital_scan( input : &str, map : &mut HashMap<usize, usize>, my_stack : &mut Vec<usize>){
+    let mut count = 0;
+    let mut index = 0;
+    for command in input.chars() {
+        match command {
+            '[' => {
+                my_stack.push(index);
+                count += 1;
+            }
+            ']' => {
+                if let Some(start) = my_stack.pop() {
+                    map.insert(start, index);
+                    map.insert(index, start);
+                    count -= 1;
+                } else {
+                    println!("Doesn't have [, so it incomplete");
+                    return;
+                }
+            }
+            _ => {}
+        }
+        index += 1
+    }
+
+    if count != 0 {
+        println!("[ is incomplete because of ]");
+        return;
+    }
+}
+
+fn scan_option(){
+}
+
+fn scan() {
+
 }
