@@ -1,4 +1,5 @@
-use std::{collections::HashMap, io::stdin};
+use std::{collections::HashMap, fs, io::stdin};
+mod scan;
 
 fn main() {
     //Main Array
@@ -6,117 +7,63 @@ fn main() {
     let mut ptr = 0;
 
     //Input
-    let mut input = String::new();
-    stdin().read_line(&mut input).expect("Failed to read");
-    let input = input.trim();
+    // let input = &input_option();
+    let mut debug_option = String::new();
 
-    //For "[", "]"
+    //For Mapping
     let mut my_stack: Vec<usize> = Vec::new();
     let mut map: HashMap<usize, usize> = HashMap::new();
     let mut i = 0;
 
+    //File Reader
+    let content = match fs::read_to_string("brain.txt") {
+        Ok(c) => c,
+        Err(_) => {
+            println!("Failed to read from File");
+            return;
+        }
+    };
 
-    // //Turn program into a vec
-    let program: Vec<char> = input.chars().filter(|c| "+-><,.[]".contains(*c)).collect();
+    //Turn program into a vec
+    let program: Vec<char> = content
+        .chars()
+        .filter(|c| "+-><,.[]".contains(*c))
+        .collect();
 
     //Inital Scan
-    inital_scan(input, &mut map, &mut my_stack);
-    
-    println!("{:?}", map);
+    if scan::inital_scan(&content, &mut map, &mut my_stack) {
+        //Debug Option
+        println!("Do you want Debug Mode(Y for yes)");
+        stdin()
+            .read_line(&mut debug_option)
+            .expect("Failed to read");
+    } else {
+        return;
+    }
 
-    //Debug Option
-    println!("Do you want Debug Mode(Y for yes)");
-    let mut debug = String::new();
-    stdin().read_line(&mut debug).expect("Failed to read");
-    let debug = debug.trim();
-
-    //Scan
+    //Actual Scan
     while i < program.len() {
         let command = program[i];
-        if debug == "Y" {
-            println!("IP: {} CMD: {} PTR: {} MEM: {:?}",
-                i,
-                command,
-                ptr,
-                brainfuck,
+        if debug_option.trim() == "Y" {
+            println!(
+                "IP: {} CMD: {} PTR: {} MEM: {:?}",
+                i, command, ptr, brainfuck,
             );
         }
 
-        match command {
-            '[' => {
-                if brainfuck[ptr] == 0 {
-                    //Destination
-                    i = *map.get(&i).unwrap();
-                }
-            }
-            ']' => {
-                if brainfuck[ptr] != 0 {
-                    //Start point
-                    i = *map.get(&i).unwrap();
-                }
-            }
-            '+' => {
-                brainfuck[ptr] += 1;
-            }
-            '-' => {
-                brainfuck[ptr] -= 1;
-            }
-            '>' => ptr += 1,
-            '<' => {
-                if ptr > 0 {
-                    ptr -= 1
-                }
-            }
-            '.' => {
-                let ascii = brainfuck[ptr] as u8 as char;
-                println!("{}", ascii);
-            }
-            ',' => {
-                let mut ascii_char = String::new();
-                stdin().read_line(&mut ascii_char).expect("Failed to read");
-                let ascii_value = ascii_char.as_bytes()[0];
-                brainfuck[ptr] = ascii_value as u8;
-            }
-            _ => {}
-        }
-        i += 1;
+        scan::scan_result(&mut brainfuck, &mut ptr, &command, &mut i, &map);
     }
     println!("{:?}", brainfuck);
 }
 
-fn inital_scan( input : &str, map : &mut HashMap<usize, usize>, my_stack : &mut Vec<usize>){
-    let mut count = 0;
-    let mut index = 0;
-    for command in input.chars() {
-        match command {
-            '[' => {
-                my_stack.push(index);
-                count += 1;
-            }
-            ']' => {
-                if let Some(start) = my_stack.pop() {
-                    map.insert(start, index);
-                    map.insert(index, start);
-                    count -= 1;
-                } else {
-                    println!("Doesn't have [, so it incomplete");
-                    return;
-                }
-            }
-            _ => {}
-        }
-        index += 1
-    }
-
-    if count != 0 {
-        println!("[ is incomplete because of ]");
-        return;
-    }
+//Helper Method
+//Terminal Option
+fn input_option() -> String {
+    let mut input = String::new();
+    stdin().read_line(&mut input).expect("Failed to read");
+    return input.trim().to_string();
 }
 
-fn scan_option(){
-}
-
-fn scan() {
-
-}
+//+++[-]
+//++[>++<-]
+//++[>++[>+<-]<-]
