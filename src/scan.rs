@@ -1,6 +1,43 @@
 use std::collections::HashMap;
 use std::io::stdin;
 
+pub fn run(
+    input: &str,
+    map: &mut HashMap<usize, usize>,
+    my_stack: &mut Vec<usize>,
+    debug_option: &mut String,
+    program: &Vec<char>,
+    i: &mut usize,
+    ptr: &mut usize,
+    brainfuck: &mut Vec<u8>,
+) {
+    //Inital Scan
+    if inital_scan(&input, map, my_stack) {
+        //Debug Option
+        println!("Do you want Debug Mode(Y for yes)");
+        stdin()
+            .read_line( debug_option)
+            .expect("Failed to read");
+    } else {
+        return;
+    }
+
+    //Actual Scan
+    while *i < program.len() {
+        let command = program[*i];
+        if debug_option.trim() == "Y" {
+            println!(
+                "IP: {} CMD: {} PTR: {} MEM: {:?}",
+                i, command, ptr, brainfuck,
+            );
+        }
+
+        scan_result(brainfuck, ptr, &command, i, &map);
+    }
+    println!("{:?}", brainfuck);
+}
+
+
 pub fn inital_scan(
     input: &str,
     map: &mut HashMap<usize, usize>,
@@ -71,7 +108,12 @@ pub fn scan_result(
         '-' => {
             brainfuck[*ptr] -= 1;
         }
-        '>' => *ptr += 1,
+        '>' => {
+            *ptr += 1;
+            if *ptr >= brainfuck.len() {
+                brainfuck.push(0)
+            }
+        }
         '<' => {
             if *ptr > 0 {
                 *ptr -= 1
