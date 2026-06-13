@@ -1,7 +1,13 @@
-use rand::{Rng, RngExt};
+use rand::RngExt;
+use std::time::Instant;
 use std::{collections::HashMap, io::stdin, thread::sleep, time::Duration};
 
-use crate::scan::scan_result;
+use crate::game::run_game1;
+use crate::interpreter::interpreter;
+use crate::scan::{inital_scan, scan_result};
+
+mod game;
+mod interpreter;
 mod scan;
 mod test;
 
@@ -25,7 +31,7 @@ fn main() {
     let choice = input_option();
 
     match choice.as_str() {
-        "1" => game1(),
+        "1" => run_game1(),
         "2" => game2(),
         "3" => game3(),
         "4" => game4(),
@@ -51,118 +57,44 @@ fn input_option() -> String {
 // 3. Reaction
 // 4. Puzzle
 
-fn game1() {
+fn game2() {
     println!(
         "
     Cell0 GameState(0-Waiting 1-Start 2-Finish)\n
-    Cell1 Result(-1-wrong 1-correct)\n
-    Cell2 Target Value\n
-    Cell3 Reaction Score\n
-    Type , to guess when Cell0 turn 1
+    Cell1 Result(0-wrong 1-correct)\n
+    Cell2 Pattern length\n
+    Cell3 Player final pointer position\n
+    Cell4 Score
     "
     );
+
     println!("Type S to start: ");
-
-    if input_option() == "S" {
-        //Waiting
-        let mut reaction_array: Vec<u8> = vec![0, 0, 0, 0];
-        let mut ptr = 0;
-        let _my_stack: Vec<usize> = Vec::new();
-        let mut map: HashMap<usize, usize> = HashMap::new();
-        let mut i = 0;
-        let ascii_mode = InputMode::Ascii;
-        let num_mode = InputMode::Number;
-        println!("{:?}", reaction_array);
-
-        //Start Signal
-        let mut rng = rand::rng();
-        let start_timer = rng.random_range(1..10);
-        sleep(Duration::from_secs(start_timer));
-
-        //Target Value
-        let mut target = rand::rng();
-        reaction_array[2] = target.random_range(1..=120);
-
-        scan_result(
-            &mut reaction_array,
-            &mut ptr,
-            &'+',
-            &mut i,
-            &mut map,
-            &ascii_mode,
-        );
-
-        scan_result(
-            &mut reaction_array,
-            &mut ptr,
-            &',',
-            &mut i,
-            &mut map,
-            &ascii_mode,
-        );
-
-        println!("{:?}", reaction_array)
-    } else {
-        println!("Try again");
-        return;
-    }
 }
 
-fn game2() {}
-
-fn game3() {}
-
-fn game4() {}
-
-fn interpreter() {
-    //Main Array
-    let mut interpreter: Vec<u8> = vec![0, 0, 0, 0, 0];
-    let mut ptr = 0;
-    let mode = InputMode::Number;
-
+fn game3() {
     println!(
         "
-    Instruction:\n
-    + for increment\n
-    - for decrement\n
-    > for right\n
-    < for left\n
-    . for int to char\n
-    , for char to int\n
-    [ left bracket\n
-    ] right bracket\n
+    Cell0 GameState(0-Waiting 1-Start 2-Finish)\n
+    Cell1 Result(0-alive 1-dead)\n
+    Cell2 Health\n
+    Cell3 Damage\n
+    Cell4 Round survived
     "
     );
-    //Input
-    let input = &input_option();
-    let mut debug_option = String::new();
 
-    //File Reader
-    // let content = match fs::read_to_string("brain.txt") {
-    //     Ok(c) => c,
-    //     Err(_) => {
-    //         println!("Failed to read from File");
-    //         return;
-    //     }
-    // };
+    println!("Type S to start: ");
+}
 
-    //For Mapping
-    let mut my_stack: Vec<usize> = Vec::new();
-    let mut map: HashMap<usize, usize> = HashMap::new();
-    let mut i = 0;
-
-    //Turn program into a vec
-    let program: Vec<char> = input.chars().filter(|c| "+-><,.[]".contains(*c)).collect();
-
-    scan::run(
-        &input,
-        &mut map,
-        &mut my_stack,
-        &mut debug_option,
-        &program,
-        &mut i,
-        &mut ptr,
-        &mut interpreter,
-        mode,
+fn game4() {
+    println!(
+        "
+    Cell0 GameState(0-Waiting 1-Start 2-Finish)\n
+    Cell1 Result(0-wrong 1-wrong)\n
+    Cell2 Target Value\n
+    Cell3 Working Value\n
+    Cell4 Steps used
+    "
     );
+
+    println!("Type S to start: ");
 }
