@@ -1,8 +1,9 @@
 use rand::RngExt;
+use std::io::Write;
 use std::time::Instant;
 use std::{collections::HashMap, io::stdin, thread::sleep, time::Duration};
 
-use crate::game::run_game1;
+use crate::game::{game1, game2};
 use crate::interpreter::interpreter;
 use crate::scan::{inital_scan, scan_result};
 
@@ -31,7 +32,7 @@ fn main() {
     let choice = input_option();
 
     match choice.as_str() {
-        "1" => run_game1(),
+        "1" => game1(),
         "2" => game2(),
         "3" => game3(),
         "4" => game4(),
@@ -56,20 +57,6 @@ fn input_option() -> String {
 // 2. Survival
 // 3. Reaction
 // 4. Puzzle
-
-fn game2() {
-    println!(
-        "
-    Cell0 GameState(0-Waiting 1-Start 2-Finish)\n
-    Cell1 Result(0-wrong 1-correct)\n
-    Cell2 Pattern length\n
-    Cell3 Player final pointer position\n
-    Cell4 Score
-    "
-    );
-
-    println!("Type S to start: ");
-}
 
 fn game3() {
     println!(

@@ -134,7 +134,11 @@ pub fn scan_result(
                 }
                 InputMode::Number => {
                     let input = input.trim();
-                    interpreter[*ptr] = input.parse::<u8>().unwrap();
+                    if let Ok(v) = input.parse::<u8>() {
+                        interpreter[*ptr] = v
+                    } else {
+                        println!("Failed to parse");
+                    }
                 }
             }
         }
