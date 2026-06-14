@@ -153,7 +153,7 @@ fn run_game2(
     map: &mut HashMap<usize, usize>,
     expected_ptr: &mut usize,
 ) {
-    println!("{}", pattern);
+    println!("Pattern : {}", pattern);
 
     //Showing timer before remove
     sleep(Duration::from_secs(3));
