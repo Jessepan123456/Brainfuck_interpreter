@@ -124,6 +124,7 @@ pub fn scan_result(
             println!("{}", ascii);
         }
         ',' => {
+            println!("Enter your ascii_value:");
             let mut input = String::new();
             stdin().read_line(&mut input).expect("Failed to read");
 
